@@ -20,9 +20,35 @@ app.get("/", (req, res) => {
   res.send("Socket API")
 })
 
+let messages = [
+  {
+    message: "Ini message 1"
+  },
+  {
+    message: "message 2"
+  },
+  {
+    message: "Kalau ini ketiga"
+  },
+]
+
 io.on("connection", (socket) => {
   console.log("user connected")
+
+  // Send messages on user connection
+  socket.emit("INIT_MESSAGES", messages)
+
+  socket.on("SEND_MESSAGE", (data) => {
+    messages.push(data)
+
+    io.emit("INIT_MESSAGES", messages)
+  })
 })
+
+const { sequelize } = require("./lib/sequelize");
+sequelize.sync({ alter: true })
+
+app.use("/users", require("./routes/user"));
 
 server.listen(PORT, () => {
   console.log("Listening in port", PORT)
