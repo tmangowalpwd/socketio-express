@@ -13,6 +13,8 @@ const { Server } = require("socket.io")
 const io = new Server(server, { cors: { origin: "*" } })
 global.io = io
 
+module.exports = { io }
+
 app.use(cors());
 app.use(express.json());
 
@@ -49,6 +51,7 @@ const { sequelize } = require("./lib/sequelize");
 sequelize.sync({ alter: true })
 
 app.use("/users", require("./routes/user"));
+app.use("/chat", require("./routes/chat"));
 
 server.listen(PORT, () => {
   console.log("Listening in port", PORT)
